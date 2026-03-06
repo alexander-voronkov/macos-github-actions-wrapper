@@ -16,6 +16,7 @@ struct LogViewerView: View {
             ScrollView {
                 Text(viewModel.latestLog)
                     .font(.system(.caption, design: .monospaced))
+                    .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(8)
             }
