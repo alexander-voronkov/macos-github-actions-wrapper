@@ -25,7 +25,7 @@ final class RunnerStatusService {
             return .init(status: .stopped, detail: "LaunchAgent is not loaded")
         }
 
-        if !runnerProcessExists() {
+        if !runnerProcessExists(in: folder) {
             return .init(status: .starting, detail: "Runner is starting")
         }
 
@@ -48,28 +48,47 @@ final class RunnerStatusService {
         return .init(status: .idle, detail: "Runner is online and idle")
     }
 
-    private func runnerProcessExists() -> Bool {
-        let result = try? executor.run("/usr/bin/pgrep", arguments: ["-f", "Runner.Listener"])
-        return result?.exitCode == 0
+    /// Check if Runner.Listener is running from the specific runner folder.
+    private func runnerProcessExists(in folder: URL) -> Bool {
+        let result = try? executor.run("/bin/ps", arguments: ["axo", "pid,command"])
+        guard let stdout = result?.stdout, result?.exitCode == 0 else { return false }
+        let folderPath = folder.path
+        return stdout.split(separator: "\n").contains { line in
+            line.contains("Runner.Listener") && line.contains(folderPath)
+        }
     }
 
     private func detectActivityHint(folder: URL) -> RunnerActivityHint {
-        if let worker = try? executor.run("/usr/bin/pgrep", arguments: ["-f", "Runner.Worker"]), worker.exitCode == 0 {
-            return .workerActive
+        // Check for Worker scoped to this runner's folder
+        if let result = try? executor.run("/bin/ps", arguments: ["axo", "pid,command"]),
+           result.exitCode == 0 {
+            let folderPath = folder.path
+            let hasWorker = result.stdout.split(separator: "\n").contains { line in
+                line.contains("Runner.Worker") && line.contains(folderPath)
+            }
+            if hasWorker { return .workerActive }
         }
 
         let tail = logService.tail(in: folder, lineCount: 80)
+        return lastLogEvent(in: tail)
+    }
 
-        if matches(pattern: #"\b(Running\s+job|Job\s+request\s+.*received|Listening\s+for\s+Jobs)\b"#, text: tail) {
-            return .recentJobStarted
-        }
+    /// Scan log lines bottom-to-top and return the LAST matching event,
+    /// so a "Job completed" after "Running job" correctly reports finished.
+    private func lastLogEvent(in tail: String) -> RunnerActivityHint {
+        let lines = tail.split(separator: "\n", omittingEmptySubsequences: false)
 
-        if matches(pattern: #"\b(Job\s+completed|finished\s+with\s+result|has\s+finished\s+with\s+conclusion)\b"#, text: tail) {
-            return .recentJobFinished
-        }
-
-        if matches(pattern: #"\b(ERROR|Unhandled\s+exception|Runner\s+listener\s+exited\s+with\s+error)\b"#, text: tail) {
-            return .failed("Runner reported an error in recent logs")
+        for line in lines.reversed() {
+            let s = String(line)
+            if matches(pattern: #"\b(ERROR|Unhandled\s+exception|Runner\s+listener\s+exited\s+with\s+error)\b"#, text: s) {
+                return .failed("Runner reported an error in recent logs")
+            }
+            if matches(pattern: #"\b(Job\s+completed|finished\s+with\s+result|has\s+finished\s+with\s+conclusion)\b"#, text: s) {
+                return .recentJobFinished
+            }
+            if matches(pattern: #"\b(Running\s+job|Job\s+request\s+.*received)\b"#, text: s) {
+                return .recentJobStarted
+            }
         }
 
         return .running

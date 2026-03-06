@@ -48,7 +48,7 @@ final class MenuBarController: NSObject {
         }
 
         guard let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Runner status") else { return }
-        image.isTemplate = true
+        image.isTemplate = false
         statusItem.button?.image = image
         statusItem.button?.contentTintColor = iconColor(for: viewModel.status)
     }

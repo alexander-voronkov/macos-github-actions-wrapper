@@ -80,7 +80,7 @@ final class AppViewModel: ObservableObject {
 
     func startRunner() async {
         do {
-            guard let folder = settings.runnerFolderURL else {
+            guard let folder = settings.runnerFolderURL, settings.isConfigured else {
                 throw RunnerTrayError.runnerFolderRequired
             }
             try launchAgentService.writeLaunchAgent(for: folder)
