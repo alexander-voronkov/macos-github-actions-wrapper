@@ -44,7 +44,7 @@ final class LaunchAgentService {
     func bootstrap() throws {
         let result = try executor.run("/bin/launchctl", arguments: ["bootstrap", "gui/\(uid())", plistURL.path])
         if result.exitCode != 0 && !result.stderr.contains("Service already loaded") {
-            throw NSError(domain: "LaunchAgent", code: Int(result.exitCode), userInfo: [NSLocalizedDescriptionKey: result.stderr])
+            throw RunnerTrayError.launchAgentFailed(reason: result.stderr)
         }
         _ = try? executor.run("/bin/launchctl", arguments: ["kickstart", "-k", "gui/\(uid())/\(Self.label)"])
     }
@@ -52,7 +52,7 @@ final class LaunchAgentService {
     func bootout() throws {
         let result = try executor.run("/bin/launchctl", arguments: ["bootout", "gui/\(uid())/\(Self.label)"])
         if result.exitCode != 0 && !result.stderr.contains("No such process") {
-            throw NSError(domain: "LaunchAgent", code: Int(result.exitCode), userInfo: [NSLocalizedDescriptionKey: result.stderr])
+            throw RunnerTrayError.launchAgentFailed(reason: result.stderr)
         }
     }
 

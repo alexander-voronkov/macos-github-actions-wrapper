@@ -5,12 +5,12 @@ final class RunnerConfigService {
 
     func configure(settings: RunnerSettings, registrationToken: String) throws {
         guard let folder = settings.runnerFolderURL else {
-            throw NSError(domain: "RunnerConfig", code: 10, userInfo: [NSLocalizedDescriptionKey: "Runner folder is required"])
+            throw RunnerTrayError.runnerFolderRequired
         }
 
         let configScript = folder.appendingPathComponent("config.sh")
         guard FileManager.default.fileExists(atPath: configScript.path) else {
-            throw NSError(domain: "RunnerConfig", code: 11, userInfo: [NSLocalizedDescriptionKey: "config.sh not found in selected runner folder"])
+            throw RunnerTrayError.configScriptNotFound
         }
 
         var command = "./config.sh --url \(shellEscape(settings.githubURL)) --name \(shellEscape(settings.runnerName)) --work \(shellEscape(settings.workFolder)) --labels \(shellEscape(settings.labels)) --token \"$RUNNER_CFG_TOKEN\""
@@ -27,9 +27,7 @@ final class RunnerConfigService {
         )
 
         if result.exitCode != 0 {
-            throw NSError(domain: "RunnerConfig", code: Int(result.exitCode), userInfo: [
-                NSLocalizedDescriptionKey: "Runner configuration failed. \(result.stderr)"
-            ])
+            throw RunnerTrayError.configurationFailed(exitCode: Int(result.exitCode), stderr: result.stderr)
         }
     }
 

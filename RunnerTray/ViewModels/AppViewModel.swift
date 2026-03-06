@@ -65,7 +65,7 @@ final class AppViewModel: ObservableObject {
         do {
             let token = registrationToken.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !token.isEmpty else {
-                throw NSError(domain: "RunnerTray", code: 99, userInfo: [NSLocalizedDescriptionKey: "Registration token is required"])
+                throw RunnerTrayError.registrationTokenRequired
             }
             try configService.configure(settings: settings, registrationToken: token)
             registrationToken = ""
@@ -81,7 +81,7 @@ final class AppViewModel: ObservableObject {
     func startRunner() async {
         do {
             guard let folder = settings.runnerFolderURL else {
-                throw NSError(domain: "RunnerTray", code: 97, userInfo: [NSLocalizedDescriptionKey: "Please select a runner folder first"])
+                throw RunnerTrayError.runnerFolderRequired
             }
             try launchAgentService.writeLaunchAgent(for: folder)
             try launchAgentService.bootstrap()
