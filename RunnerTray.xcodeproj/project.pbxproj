@@ -17,6 +17,7 @@
 		A00000000000000000000008 /* RunnerConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000108 /* RunnerConfigService.swift */; };
 		A00000000000000000000009 /* LogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000109 /* LogService.swift */; };
 		A00000000000000000000010 /* RunnerStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000110 /* RunnerStatusService.swift */; };
+		A00000000000000000000017 /* RunnerUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000118 /* RunnerUpdateService.swift */; };
 		A00000000000000000000011 /* LaunchAtLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000111 /* LaunchAtLoginService.swift */; };
 		A00000000000000000000012 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000112 /* AppViewModel.swift */; };
 		A00000000000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000113 /* SettingsView.swift */; };
@@ -37,6 +38,7 @@
 		A00000000000000000000108 /* RunnerConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerConfigService.swift; sourceTree = "<group>"; };
 		A00000000000000000000109 /* LogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogService.swift; sourceTree = "<group>"; };
 		A00000000000000000000110 /* RunnerStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerStatusService.swift; sourceTree = "<group>"; };
+		A00000000000000000000118 /* RunnerUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerUpdateService.swift; sourceTree = "<group>"; };
 		A00000000000000000000111 /* LaunchAtLoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginService.swift; sourceTree = "<group>"; };
 		A00000000000000000000112 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		A00000000000000000000113 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -82,7 +84,7 @@
 		};
 		A00000000000000000000302 /* MenuBar */ = {isa = PBXGroup; children = (A00000000000000000000102 /* MenuBarController.swift */); path = MenuBar; sourceTree = "<group>"; };
 		A00000000000000000000303 /* Models */ = {isa = PBXGroup; children = (A00000000000000000000103 /* RunnerStatus.swift */, A00000000000000000000104 /* RunnerSettings.swift */); path = Models; sourceTree = "<group>"; };
-		A00000000000000000000304 /* Services */ = {isa = PBXGroup; children = (A00000000000000000000105 /* KeychainService.swift */, A00000000000000000000106 /* SettingsStore.swift */, A00000000000000000000107 /* LaunchAgentService.swift */, A00000000000000000000108 /* RunnerConfigService.swift */, A00000000000000000000109 /* LogService.swift */, A00000000000000000000110 /* RunnerStatusService.swift */, A00000000000000000000111 /* LaunchAtLoginService.swift */); path = Services; sourceTree = "<group>"; };
+		A00000000000000000000304 /* Services */ = {isa = PBXGroup; children = (A00000000000000000000105 /* KeychainService.swift */, A00000000000000000000106 /* SettingsStore.swift */, A00000000000000000000107 /* LaunchAgentService.swift */, A00000000000000000000108 /* RunnerConfigService.swift */, A00000000000000000000109 /* LogService.swift */, A00000000000000000000110 /* RunnerStatusService.swift */, A00000000000000000000111 /* LaunchAtLoginService.swift */, A00000000000000000000118 /* RunnerUpdateService.swift */); path = Services; sourceTree = "<group>"; };
 		A00000000000000000000305 /* ViewModels */ = {isa = PBXGroup; children = (A00000000000000000000112 /* AppViewModel.swift */); path = ViewModels; sourceTree = "<group>"; };
 		A00000000000000000000306 /* Views */ = {isa = PBXGroup; children = (A00000000000000000000113 /* SettingsView.swift */, A00000000000000000000114 /* LogViewerView.swift */); path = Views; sourceTree = "<group>"; };
 		A00000000000000000000307 /* Utilities */ = {isa = PBXGroup; children = (A00000000000000000000115 /* ProcessExecutor.swift */, A00000000000000000000116 /* RunnerTrayError.swift */); path = Utilities; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				A00000000000000000000014 /* LogViewerView.swift in Sources */,
 				A00000000000000000000015 /* ProcessExecutor.swift in Sources */,
 				A00000000000000000000016 /* RunnerTrayError.swift in Sources */,
+				A00000000000000000000017 /* RunnerUpdateService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,8 +11,11 @@ final class AppViewModel: ObservableObject {
     @Published var registrationToken: String = ""
     @Published var pauseRequested = false
     @Published var alertMessage: String?
+    @Published var updateStatus: String = ""
+    @Published var isUpdating = false
 
     private let settingsStore: SettingsStore
+    private let updateService = RunnerUpdateService()
     private let configService: RunnerConfigService
     private let launchAgentService: LaunchAgentService
     private let logService: LogService
@@ -48,6 +51,12 @@ final class AppViewModel: ObservableObject {
 
         refreshStatus()
         startPolling()
+        scheduleUpdateCheck()
+
+        // Check for updates on launch
+        if settings.isConfigured {
+            Task { await checkForUpdates(silent: true) }
+        }
     }
 
     func startPolling() {
@@ -174,5 +183,93 @@ final class AppViewModel: ObservableObject {
             settings.launchAtLogin = launchAtLoginService.isEnabled()
             alertMessage = "Could not change Launch at Login: \(error.localizedDescription)"
         }
+    }
+
+    // MARK: - Runner Auto-Update
+
+    private var updateTimer: Timer?
+
+    func scheduleUpdateCheck() {
+        updateTimer?.invalidate()
+        // Check every 24 hours
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 86400, repeats: true) { [weak self] _ in
+            Task { @MainActor in await self?.checkForUpdates(silent: true) }
+        }
+    }
+
+    /// Check for runner binary updates. If silent, only alerts when update is available.
+    func checkForUpdates(silent: Bool = false) async {
+        guard let folder = settings.runnerFolderURL else {
+            if !silent { alertMessage = "Runner folder is not configured" }
+            return
+        }
+
+        updateStatus = "Checking for updates…"
+        do {
+            if let release = try await updateService.checkForUpdate(in: folder) {
+                let current = updateService.currentVersion(in: folder) ?? "unknown"
+                updateStatus = "Update available: \(release.version) (current: \(current))"
+                if silent {
+                    // Auto-update: stop → update → start
+                    await applyUpdate(release: release)
+                } else {
+                    alertMessage = "Runner update available: \(current) → \(release.version). Use 'Update Runner' to install."
+                }
+            } else {
+                let current = updateService.currentVersion(in: folder) ?? "unknown"
+                updateStatus = "Up to date (\(current))"
+                if !silent { alertMessage = "Runner is up to date (\(current))" }
+            }
+        } catch {
+            updateStatus = "Update check failed"
+            if !silent { alertMessage = "Update check failed: \(error.localizedDescription)" }
+        }
+    }
+
+    /// Download and apply the runner update. Stops the runner, updates, restarts.
+    func applyUpdate(release: RunnerRelease? = nil) async {
+        guard let folder = settings.runnerFolderURL else {
+            alertMessage = "Runner folder is not configured"
+            return
+        }
+
+        isUpdating = true
+        updateStatus = "Preparing update…"
+
+        do {
+            let targetRelease: RunnerRelease
+            if let release {
+                targetRelease = release
+            } else {
+                updateStatus = "Fetching latest release…"
+                targetRelease = try await updateService.fetchLatestRelease()
+            }
+
+            // Stop runner if running
+            let wasRunning = (status == .idle || status == .busy || status == .starting)
+            if wasRunning {
+                updateStatus = "Stopping runner…"
+                await stopRunner()
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+            }
+
+            updateStatus = "Downloading \(targetRelease.version)…"
+            try await updateService.applyUpdate(release: targetRelease, to: folder)
+
+            updateStatus = "Update complete: \(targetRelease.version)"
+
+            // Restart if it was running before
+            if wasRunning {
+                updateStatus = "Restarting runner…"
+                await startRunner()
+            }
+
+            updateStatus = "Updated to \(targetRelease.version) ✓"
+        } catch {
+            updateStatus = "Update failed"
+            alertMessage = "Update failed: \(error.localizedDescription)"
+        }
+
+        isUpdating = false
     }
 }

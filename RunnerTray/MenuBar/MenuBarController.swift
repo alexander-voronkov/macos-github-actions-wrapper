@@ -28,7 +28,7 @@ final class MenuBarController: NSObject {
     }
 
     private func bind() {
-        viewModel.$status.combineLatest(viewModel.$settings).sink { [weak self] _, _ in
+        viewModel.$status.combineLatest(viewModel.$settings, viewModel.$updateStatus).sink { [weak self] _, _, _ in
             self?.updateIcon()
             self?.rebuildMenu()
         }.store(in: &cancellables)
@@ -79,6 +79,15 @@ final class MenuBarController: NSObject {
         menu.addItem(makeAction("Resume", #selector(resumeRunner), enabled: viewModel.status == .stopped || viewModel.status == .pausing))
 
         menu.addItem(.separator())
+        let updateTitle = viewModel.isUpdating ? "Updating…" : "Check for Updates"
+        menu.addItem(makeAction(updateTitle, #selector(checkForUpdates), enabled: !viewModel.isUpdating && viewModel.settings.isConfigured))
+        if !viewModel.updateStatus.isEmpty {
+            let statusItem = NSMenuItem(title: "  \(viewModel.updateStatus)", action: nil, keyEquivalent: "")
+            statusItem.isEnabled = false
+            menu.addItem(statusItem)
+        }
+
+        menu.addItem(.separator())
         menu.addItem(makeAction("Open Logs", #selector(openLogsAction), enabled: true))
         menu.addItem(makeAction("Open Runner Folder", #selector(openRunnerFolder), enabled: viewModel.settings.runnerFolderURL != nil))
         menu.addItem(makeAction("Open Settings", #selector(openSettingsAction), enabled: true))
@@ -106,6 +115,7 @@ final class MenuBarController: NSObject {
     @objc private func restartRunner() { Task { await viewModel.restartRunner() } }
     @objc private func pauseRunner() { viewModel.pauseAfterCurrentJob() }
     @objc private func resumeRunner() { Task { await viewModel.resumeRunner() } }
+    @objc private func checkForUpdates() { Task { await viewModel.checkForUpdates(silent: false) } }
     @objc private func openLogsAction() { openLogs() }
     @objc private func openRunnerFolder() { viewModel.openRunnerFolder() }
     @objc private func openSettingsAction() { openSettings() }
