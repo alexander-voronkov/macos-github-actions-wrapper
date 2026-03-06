@@ -2,11 +2,6 @@ import Foundation
 
 final class RunnerConfigService {
     private let executor = ProcessExecutor()
-    private let keychain: KeychainService
-
-    init(keychain: KeychainService) {
-        self.keychain = keychain
-    }
 
     func configure(settings: RunnerSettings, registrationToken: String) throws {
         guard let folder = settings.runnerFolderURL else {
@@ -18,27 +13,27 @@ final class RunnerConfigService {
             throw NSError(domain: "RunnerConfig", code: 11, userInfo: [NSLocalizedDescriptionKey: "config.sh not found in selected runner folder"])
         }
 
-        var args = [
-            configScript.path,
-            "--url", settings.githubURL,
-            "--name", settings.runnerName,
-            "--work", settings.workFolder,
-            "--labels", settings.labels,
-            "--token", registrationToken
-        ]
+        var command = "./config.sh --url \(shellEscape(settings.githubURL)) --name \(shellEscape(settings.runnerName)) --work \(shellEscape(settings.workFolder)) --labels \(shellEscape(settings.labels)) --token \"$RUNNER_CFG_TOKEN\""
 
         if settings.unattendedConfigure {
-            args.append("--unattended")
-            args.append("--replace")
+            command += " --unattended --replace"
         }
 
-        let result = try executor.run("/bin/bash", arguments: args, currentDirectory: folder)
+        let result = try executor.run(
+            "/bin/bash",
+            arguments: ["-lc", command],
+            currentDirectory: folder,
+            environment: ["RUNNER_CFG_TOKEN": registrationToken]
+        )
+
         if result.exitCode != 0 {
             throw NSError(domain: "RunnerConfig", code: Int(result.exitCode), userInfo: [
                 NSLocalizedDescriptionKey: "Runner configuration failed. \(result.stderr)"
             ])
         }
+    }
 
-        try? keychain.saveSecret(registrationToken, account: "registration-token")
+    private func shellEscape(_ value: String) -> String {
+        "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
     }
 }

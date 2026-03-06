@@ -38,7 +38,7 @@ final class RunnerStatusService {
             if hint == .workerActive || hint == .recentJobStarted {
                 return .init(status: .pausing, detail: "Waiting for current job to finish")
             }
-            return .init(status: .stopped, detail: "Paused after current job")
+            return .init(status: .idle, detail: "Runner is idle and ready to pause")
         }
 
         if hint == .workerActive || hint == .recentJobStarted {
@@ -58,30 +58,25 @@ final class RunnerStatusService {
             return .workerActive
         }
 
-        let tail = logService.tail(in: folder, lineCount: 60)
-        if tail.localizedCaseInsensitiveContains("Running job") || tail.localizedCaseInsensitiveContains("Job request") {
+        let tail = logService.tail(in: folder, lineCount: 80)
+
+        if matches(pattern: #"\b(Running\s+job|Job\s+request\s+.*received|Listening\s+for\s+Jobs)\b"#, text: tail) {
             return .recentJobStarted
         }
-        if tail.localizedCaseInsensitiveContains("Job completed") || tail.localizedCaseInsensitiveContains("finished with result") {
+
+        if matches(pattern: #"\b(Job\s+completed|finished\s+with\s+result|has\s+finished\s+with\s+conclusion)\b"#, text: tail) {
             return .recentJobFinished
         }
-        if tail.localizedCaseInsensitiveContains("error") && tail.localizedCaseInsensitiveContains("listener") {
+
+        if matches(pattern: #"\b(ERROR|Unhandled\s+exception|Runner\s+listener\s+exited\s+with\s+error)\b"#, text: tail) {
             return .failed("Runner reported an error in recent logs")
         }
 
         return .running
     }
-}
 
-extension RunnerActivityHint: Equatable {
-    static func == (lhs: RunnerActivityHint, rhs: RunnerActivityHint) -> Bool {
-        switch (lhs, rhs) {
-        case (.unknown, .unknown), (.running, .running), (.workerActive, .workerActive), (.recentJobStarted, .recentJobStarted), (.recentJobFinished, .recentJobFinished):
-            return true
-        case (.failed(let a), .failed(let b)):
-            return a == b
-        default:
-            return false
-        }
+    private func matches(pattern: String, text: String) -> Bool {
+        (try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]))?
+            .firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text)) != nil
     }
 }

@@ -12,8 +12,7 @@ enum RunnerStatus: String, Codable, CaseIterable {
     var menuDescription: String { rawValue }
 }
 
-enum RunnerActivityHint {
-    case unknown
+enum RunnerActivityHint: Equatable {
     case running
     case workerActive
     case recentJobStarted

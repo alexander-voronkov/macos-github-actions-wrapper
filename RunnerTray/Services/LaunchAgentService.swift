@@ -28,7 +28,7 @@ final class LaunchAgentService {
             "ProgramArguments": ["/bin/bash", "-lc", "./run.sh"],
             "WorkingDirectory": runnerFolder.path,
             "RunAtLoad": true,
-            "KeepAlive": true,
+            "KeepAlive": ["SuccessfulExit": false],
             "StandardOutPath": standardOut,
             "StandardErrorPath": standardError
         ]

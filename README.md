@@ -10,6 +10,7 @@ RunnerTray is a native macOS 14+ menu bar app for managing a single local GitHub
 - Exposes status transitions: Not Configured, Stopped, Starting, Idle, Busy, Pausing, Error.
 - Provides Settings and Log Viewer windows built with SwiftUI.
 - Runs `config.sh` from the app when configuring a runner.
+- Settings are auto-saved on edit (manual save button still available).
 
 ## v1 limitations
 
@@ -31,7 +32,7 @@ RunnerTray is a native macOS 14+ menu bar app for managing a single local GitHub
 
 ## How status is detected
 
-RunnerTray uses layered heuristics:
+RunnerTray uses layered heuristics (polled every 12 seconds to limit background churn):
 
 1. LaunchAgent state from `launchctl print gui/<uid>/com.runnertray.github-runner`.
 2. Runner listener process check (`pgrep -f Runner.Listener`).
@@ -64,7 +65,7 @@ This detection logic is isolated in `RunnerStatusService` so it can be improved 
 4. RunnerTray invokes `config.sh` via `Process`.
 5. The token field is cleared after successful configuration.
 
-> Sensitive values are never printed to app logs. The registration token is written to Keychain if saved during configuration.
+> Sensitive values are never printed to app logs. The registration token is used only for the configure call and then cleared from the UI field.
 
 ## Pause behavior (drain mode)
 
@@ -83,7 +84,7 @@ RunnerTray uses modern ServiceManagement API (`SMAppService.mainApp`) to toggle 
 ## Settings persistence and secrets
 
 - Non-sensitive settings: `UserDefaults` JSON blob (`runnertray.settings`).
-- Sensitive token data: Keychain (`com.runnertray.app` service namespace).
+- Registration token is intentionally not persisted after configuration (ephemeral in memory/UI only).
 
 ## Logs
 
@@ -113,7 +114,7 @@ RunnerTray writes an XML plist with values equivalent to:
 - ProgramArguments: `/bin/bash -lc ./run.sh`
 - WorkingDirectory: `<runner folder>`
 - RunAtLoad: `true`
-- KeepAlive: `true`
+- KeepAlive: `{ SuccessfulExit = false }`
 - StandardOutPath: `<runner folder>/runnertray-stdout.log`
 - StandardErrorPath: `<runner folder>/runnertray-stderr.log`
 
