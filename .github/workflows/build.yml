@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate App Icon
         run: |
-          # Create icon directory
+          # Ensure Assets.xcassets structure exists
           ICON_DIR="RunnerTray/Resources/Assets.xcassets/AppIcon.appiconset"
           mkdir -p "$ICON_DIR"
 
@@ -41,34 +41,16 @@ jobs:
           curl -sL "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" -o /tmp/github.png
 
           # Generate all required sizes using sips (macOS built-in)
-          for size in 16 32 64 128 256 512; do
-            double=$((size * 2))
-            sips -z $size $size /tmp/github.png --out "$ICON_DIR/icon_${size}x${size}.png" >/dev/null 2>&1
-            sips -z $double $double /tmp/github.png --out "$ICON_DIR/icon_${size}x${size}@2x.png" >/dev/null 2>&1
-          done
-          # 1024 for @2x of 512
+          sips -z 16 16 /tmp/github.png --out "$ICON_DIR/icon_16.png" >/dev/null 2>&1
+          sips -z 32 32 /tmp/github.png --out "$ICON_DIR/icon_32.png" >/dev/null 2>&1
+          sips -z 64 64 /tmp/github.png --out "$ICON_DIR/icon_64.png" >/dev/null 2>&1
+          sips -z 128 128 /tmp/github.png --out "$ICON_DIR/icon_128.png" >/dev/null 2>&1
+          sips -z 256 256 /tmp/github.png --out "$ICON_DIR/icon_256.png" >/dev/null 2>&1
+          sips -z 512 512 /tmp/github.png --out "$ICON_DIR/icon_512.png" >/dev/null 2>&1
           sips -z 1024 1024 /tmp/github.png --out "$ICON_DIR/icon_1024.png" >/dev/null 2>&1
 
-          # Create Contents.json
-          cat > "$ICON_DIR/Contents.json" << 'JSONEOF'
-          {
-            "images" : [
-              {"size" : "16x16", "idiom" : "mac", "filename" : "icon_16x16.png", "scale" : "1x"},
-              {"size" : "16x16", "idiom" : "mac", "filename" : "icon_16x16@2x.png", "scale" : "2x"},
-              {"size" : "32x32", "idiom" : "mac", "filename" : "icon_32x32.png", "scale" : "1x"},
-              {"size" : "32x32", "idiom" : "mac", "filename" : "icon_32x32@2x.png", "scale" : "2x"},
-              {"size" : "128x128", "idiom" : "mac", "filename" : "icon_128x128.png", "scale" : "1x"},
-              {"size" : "128x128", "idiom" : "mac", "filename" : "icon_128x128@2x.png", "scale" : "2x"},
-              {"size" : "256x256", "idiom" : "mac", "filename" : "icon_256x256.png", "scale" : "1x"},
-              {"size" : "256x256", "idiom" : "mac", "filename" : "icon_256x256@2x.png", "scale" : "2x"},
-              {"size" : "512x512", "idiom" : "mac", "filename" : "icon_512x512.png", "scale" : "1x"},
-              {"size" : "512x512", "idiom" : "mac", "filename" : "icon_1024.png", "scale" : "2x"}
-            ],
-            "info" : {"version" : 1, "author" : "xcode"}
-          }
-          JSONEOF
-
-          echo "✅ App icon generated from GitHub logo"
+          echo "✅ App icons generated from GitHub logo"
+          ls -la "$ICON_DIR"
 
       - name: Build Release
         run: |
