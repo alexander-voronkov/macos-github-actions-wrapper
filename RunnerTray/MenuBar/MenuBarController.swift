@@ -21,8 +21,7 @@ final class MenuBarController: NSObject {
 
     private func setup() {
         if let button = statusItem.button {
-            button.title = "RunnerTray"
-            button.imagePosition = .imageLeading
+            button.imagePosition = .imageOnly
         }
         rebuildMenu()
     }
