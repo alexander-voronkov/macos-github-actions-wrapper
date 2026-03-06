@@ -1,0 +1,83 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build RunnerTray.app
+    runs-on: [self-hosted, macOS, ARM64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          # Use latest Xcode available on the runner
+          XCODE_PATH=$(xcode-select -p 2>/dev/null || true)
+          echo "Using Xcode at: $XCODE_PATH"
+          xcodebuild -version
+
+      - name: Build Release
+        run: |
+          xcodebuild \
+            -project RunnerTray.xcodeproj \
+            -scheme RunnerTray \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            -destination 'platform=macOS,arch=arm64' \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            clean build
+
+      - name: Package app
+        run: |
+          APP_PATH="build/DerivedData/Build/Products/Release/RunnerTray.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "❌ RunnerTray.app not found at $APP_PATH"
+            find build/DerivedData/Build/Products -name "*.app" 2>/dev/null
+            exit 1
+          fi
+          echo "✅ Built: $APP_PATH"
+
+          # Create zip for release
+          cd build/DerivedData/Build/Products/Release
+          zip -r -y "$GITHUB_WORKSPACE/RunnerTray.zip" RunnerTray.app
+          echo "📦 Packaged: RunnerTray.zip ($(du -h "$GITHUB_WORKSPACE/RunnerTray.zip" | cut -f1))"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunnerTray
+          path: RunnerTray.zip
+          retention-days: 30
+
+  release:
+    name: Create Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: [self-hosted, macOS, ARM64]
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: RunnerTray
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "RunnerTray $TAG" \
+            --generate-notes \
+            RunnerTray.zip
