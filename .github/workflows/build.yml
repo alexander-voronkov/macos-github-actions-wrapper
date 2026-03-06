@@ -83,18 +83,31 @@ jobs:
       - name: Create Release
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           TAG="v${VERSION}"
+          DMG="${{ env.dmg_name }}"
 
           # Create tag
           git tag "$TAG"
           git push origin "$TAG"
 
-          # Create release with DMG
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "RunnerTray $VERSION" \
-            --generate-notes \
-            "${{ env.dmg_name }}"
+          # Create release via GitHub API
+          RELEASE_JSON=$(curl -s -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" \
+            -d "{\"tag_name\":\"$TAG\",\"name\":\"RunnerTray $VERSION\",\"generate_release_notes\":true}")
+
+          UPLOAD_URL=$(echo "$RELEASE_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['upload_url'].split('{')[0])")
+          echo "Upload URL: $UPLOAD_URL"
+
+          # Upload DMG
+          curl -s -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            "${UPLOAD_URL}?name=${DMG}&label=RunnerTray+Installer" \
+            --data-binary "@${DMG}"
+
+          echo "✅ Release $TAG created with $DMG"
