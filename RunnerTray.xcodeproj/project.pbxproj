@@ -1,0 +1,254 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A00000000000000000000001 /* RunnerTrayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000101 /* RunnerTrayApp.swift */; };
+		A00000000000000000000002 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000102 /* MenuBarController.swift */; };
+		A00000000000000000000003 /* RunnerStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000103 /* RunnerStatus.swift */; };
+		A00000000000000000000004 /* RunnerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000104 /* RunnerSettings.swift */; };
+		A00000000000000000000005 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000105 /* KeychainService.swift */; };
+		A00000000000000000000006 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000106 /* SettingsStore.swift */; };
+		A00000000000000000000007 /* LaunchAgentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000107 /* LaunchAgentService.swift */; };
+		A00000000000000000000008 /* RunnerConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000108 /* RunnerConfigService.swift */; };
+		A00000000000000000000009 /* LogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000109 /* LogService.swift */; };
+		A00000000000000000000010 /* RunnerStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000110 /* RunnerStatusService.swift */; };
+		A00000000000000000000011 /* LaunchAtLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000111 /* LaunchAtLoginService.swift */; };
+		A00000000000000000000012 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000112 /* AppViewModel.swift */; };
+		A00000000000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000113 /* SettingsView.swift */; };
+		A00000000000000000000014 /* LogViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000114 /* LogViewerView.swift */; };
+		A00000000000000000000015 /* ProcessExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000115 /* ProcessExecutor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A00000000000000000000100 /* RunnerTray.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = RunnerTray.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000101 /* RunnerTrayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTrayApp.swift; sourceTree = "<group>"; };
+		A00000000000000000000102 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
+		A00000000000000000000103 /* RunnerStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerStatus.swift; sourceTree = "<group>"; };
+		A00000000000000000000104 /* RunnerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerSettings.swift; sourceTree = "<group>"; };
+		A00000000000000000000105 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		A00000000000000000000106 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		A00000000000000000000107 /* LaunchAgentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAgentService.swift; sourceTree = "<group>"; };
+		A00000000000000000000108 /* RunnerConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerConfigService.swift; sourceTree = "<group>"; };
+		A00000000000000000000109 /* LogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogService.swift; sourceTree = "<group>"; };
+		A00000000000000000000110 /* RunnerStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerStatusService.swift; sourceTree = "<group>"; };
+		A00000000000000000000111 /* LaunchAtLoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginService.swift; sourceTree = "<group>"; };
+		A00000000000000000000112 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		A00000000000000000000113 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A00000000000000000000114 /* LogViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewerView.swift; sourceTree = "<group>"; };
+		A00000000000000000000115 /* ProcessExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessExecutor.swift; sourceTree = "<group>"; };
+		A00000000000000000000116 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Resources/Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000200 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000300 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000301 /* RunnerTray */,
+				A00000000000000000000310 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000301 /* RunnerTray */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000101 /* RunnerTrayApp.swift */,
+				A00000000000000000000302 /* MenuBar */,
+				A00000000000000000000303 /* Models */,
+				A00000000000000000000304 /* Services */,
+				A00000000000000000000305 /* ViewModels */,
+				A00000000000000000000306 /* Views */,
+				A00000000000000000000307 /* Utilities */,
+				A00000000000000000000308 /* Resources */,
+			);
+			path = RunnerTray;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000302 /* MenuBar */ = {isa = PBXGroup; children = (A00000000000000000000102 /* MenuBarController.swift */); path = MenuBar; sourceTree = "<group>"; };
+		A00000000000000000000303 /* Models */ = {isa = PBXGroup; children = (A00000000000000000000103 /* RunnerStatus.swift */, A00000000000000000000104 /* RunnerSettings.swift */); path = Models; sourceTree = "<group>"; };
+		A00000000000000000000304 /* Services */ = {isa = PBXGroup; children = (A00000000000000000000105 /* KeychainService.swift */, A00000000000000000000106 /* SettingsStore.swift */, A00000000000000000000107 /* LaunchAgentService.swift */, A00000000000000000000108 /* RunnerConfigService.swift */, A00000000000000000000109 /* LogService.swift */, A00000000000000000000110 /* RunnerStatusService.swift */, A00000000000000000000111 /* LaunchAtLoginService.swift */); path = Services; sourceTree = "<group>"; };
+		A00000000000000000000305 /* ViewModels */ = {isa = PBXGroup; children = (A00000000000000000000112 /* AppViewModel.swift */); path = ViewModels; sourceTree = "<group>"; };
+		A00000000000000000000306 /* Views */ = {isa = PBXGroup; children = (A00000000000000000000113 /* SettingsView.swift */, A00000000000000000000114 /* LogViewerView.swift */); path = Views; sourceTree = "<group>"; };
+		A00000000000000000000307 /* Utilities */ = {isa = PBXGroup; children = (A00000000000000000000115 /* ProcessExecutor.swift */); path = Utilities; sourceTree = "<group>"; };
+		A00000000000000000000308 /* Resources */ = {isa = PBXGroup; children = (A00000000000000000000116 /* Info.plist */); path = Resources; sourceTree = "<group>"; };
+		A00000000000000000000310 /* Products */ = {isa = PBXGroup; children = (A00000000000000000000100 /* RunnerTray.app */); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000400 /* RunnerTray */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A00000000000000000000500 /* Build configuration list for PBXNativeTarget "RunnerTray" */;
+			buildPhases = (
+				A00000000000000000000600 /* Sources */,
+				A00000000000000000000200 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RunnerTray;
+			productName = RunnerTray;
+			productReference = A00000000000000000000100 /* RunnerTray.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000700 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A00000000000000000000400 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A00000000000000000000800 /* Build configuration list for PBXProject "RunnerTray" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000300;
+			productRefGroup = A00000000000000000000310 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000400 /* RunnerTray */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000600 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000001 /* RunnerTrayApp.swift in Sources */,
+				A00000000000000000000002 /* MenuBarController.swift in Sources */,
+				A00000000000000000000003 /* RunnerStatus.swift in Sources */,
+				A00000000000000000000004 /* RunnerSettings.swift in Sources */,
+				A00000000000000000000005 /* KeychainService.swift in Sources */,
+				A00000000000000000000006 /* SettingsStore.swift in Sources */,
+				A00000000000000000000007 /* LaunchAgentService.swift in Sources */,
+				A00000000000000000000008 /* RunnerConfigService.swift in Sources */,
+				A00000000000000000000009 /* LogService.swift in Sources */,
+				A00000000000000000000010 /* RunnerStatusService.swift in Sources */,
+				A00000000000000000000011 /* LaunchAtLoginService.swift in Sources */,
+				A00000000000000000000012 /* AppViewModel.swift in Sources */,
+				A00000000000000000000013 /* SettingsView.swift in Sources */,
+				A00000000000000000000014 /* LogViewerView.swift in Sources */,
+				A00000000000000000000015 /* ProcessExecutor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A00000000000000000000900 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A00000000000000000000901 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A00000000000000000000910 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RunnerTray/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.runnertray.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A00000000000000000000911 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RunnerTray/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.runnertray.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A00000000000000000000800 /* Build configuration list for PBXProject "RunnerTray" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000900 /* Debug */,
+				A00000000000000000000901 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A00000000000000000000500 /* Build configuration list for PBXNativeTarget "RunnerTray" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000910 /* Debug */,
+				A00000000000000000000911 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000700 /* Project object */;
+}
