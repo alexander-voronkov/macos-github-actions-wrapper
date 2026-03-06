@@ -3,7 +3,6 @@ name: Build & Release
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -11,19 +10,31 @@ jobs:
   build:
     name: Build RunnerTray.app
     runs-on: [self-hosted, macOS, ARM64]
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # needed for tag counting
+
+      - name: Determine version
+        id: version
+        run: |
+          BUILD_NUMBER=$(git rev-list --count HEAD)
+          VERSION="1.0.${BUILD_NUMBER}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "build=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "📌 Version: $VERSION (build #$BUILD_NUMBER)"
 
       - name: Select Xcode
         run: |
-          # Use latest Xcode available on the runner
-          XCODE_PATH=$(xcode-select -p 2>/dev/null || true)
-          echo "Using Xcode at: $XCODE_PATH"
           xcodebuild -version
 
       - name: Build Release
         run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BUILD="${{ steps.version.outputs.build }}"
           xcodebuild \
             -project RunnerTray.xcodeproj \
             -scheme RunnerTray \
@@ -33,51 +44,57 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=NO \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD" \
             clean build
 
-      - name: Package app
+      - name: Create DMG
         run: |
           APP_PATH="build/DerivedData/Build/Products/Release/RunnerTray.app"
+          VERSION="${{ steps.version.outputs.version }}"
+          DMG_NAME="RunnerTray-${VERSION}.dmg"
+
           if [ ! -d "$APP_PATH" ]; then
-            echo "❌ RunnerTray.app not found at $APP_PATH"
-            find build/DerivedData/Build/Products -name "*.app" 2>/dev/null
+            echo "❌ RunnerTray.app not found"
             exit 1
           fi
-          echo "✅ Built: $APP_PATH"
 
-          # Create zip for release
-          cd build/DerivedData/Build/Products/Release
-          zip -r -y "$GITHUB_WORKSPACE/RunnerTray.zip" RunnerTray.app
-          echo "📦 Packaged: RunnerTray.zip ($(du -h "$GITHUB_WORKSPACE/RunnerTray.zip" | cut -f1))"
+          # Create DMG with Applications symlink for drag-and-drop install
+          DMG_DIR=$(mktemp -d)
+          cp -R "$APP_PATH" "$DMG_DIR/"
+          ln -s /Applications "$DMG_DIR/Applications"
+
+          hdiutil create -volname "RunnerTray $VERSION" \
+            -srcfolder "$DMG_DIR" \
+            -ov -format UDZO \
+            "$GITHUB_WORKSPACE/$DMG_NAME"
+
+          rm -rf "$DMG_DIR"
+          echo "📦 Created: $DMG_NAME ($(du -h "$GITHUB_WORKSPACE/$DMG_NAME" | cut -f1))"
+          echo "dmg_name=$DMG_NAME" >> "$GITHUB_ENV"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RunnerTray
-          path: RunnerTray.zip
+          name: RunnerTray-${{ steps.version.outputs.version }}
+          path: ${{ env.dmg_name }}
           retention-days: 30
 
-  release:
-    name: Create Release
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: [self-hosted, macOS, ARM64]
-    permissions:
-      contents: write
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: RunnerTray
-
-      - name: Create GitHub Release
+      - name: Create Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="v${VERSION}"
+
+          # Create tag
+          git tag "$TAG"
+          git push origin "$TAG"
+
+          # Create release with DMG
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "RunnerTray $TAG" \
+            --title "RunnerTray $VERSION" \
             --generate-notes \
-            RunnerTray.zip
+            "${{ env.dmg_name }}"
