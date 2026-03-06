@@ -20,8 +20,8 @@ final class RunnerConfigService {
         }
 
         let result = try executor.run(
-            "/bin/bash",
-            arguments: ["-lc", command],
+            "/usr/bin/env",
+            arguments: ["bash", "-lc", command],
             currentDirectory: folder,
             environment: ["RUNNER_CFG_TOKEN": registrationToken]
         )

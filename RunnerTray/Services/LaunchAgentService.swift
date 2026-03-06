@@ -25,7 +25,7 @@ final class LaunchAgentService {
 
         let plist: [String: Any] = [
             "Label": Self.label,
-            "ProgramArguments": ["/bin/bash", "-lc", "./run.sh"],
+            "ProgramArguments": ["/usr/bin/env", "bash", "-lc", "./run.sh"],
             "WorkingDirectory": runnerFolder.path,
             "RunAtLoad": true,
             "KeepAlive": ["SuccessfulExit": false],

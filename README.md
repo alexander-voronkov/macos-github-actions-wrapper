@@ -11,6 +11,7 @@ RunnerTray is a native macOS 14+ menu bar app for managing a single local GitHub
 - Provides Settings and Log Viewer windows built with SwiftUI.
 - Runs `config.sh` from the app when configuring a runner.
 - Settings are auto-saved on edit (manual save button still available).
+- Subprocesses use bounded timeouts to avoid indefinite hangs.
 
 ## v1 limitations
 
@@ -111,7 +112,7 @@ RunnerTray uses modern ServiceManagement API (`SMAppService.mainApp`) to toggle 
 RunnerTray writes an XML plist with values equivalent to:
 
 - Label: `com.runnertray.github-runner`
-- ProgramArguments: `/bin/bash -lc ./run.sh`
+- ProgramArguments: `/usr/bin/env bash -lc ./run.sh`
 - WorkingDirectory: `<runner folder>`
 - RunAtLoad: `true`
 - KeepAlive: `{ SuccessfulExit = false }`

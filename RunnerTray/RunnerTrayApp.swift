@@ -13,7 +13,7 @@ struct RunnerTrayApp: App {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let viewModel = AppViewModel()
     private var menuBarController: MenuBarController?
     private var settingsWindow: NSWindow?
@@ -34,14 +34,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func showSettingsWindow() {
         if settingsWindow == nil {
             let root = SettingsView(viewModel: viewModel)
-            settingsWindow = NSWindow(
+            let window = NSWindow(
                 contentRect: NSRect(x: 120, y: 120, width: 720, height: 620),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
                 defer: false
             )
-            settingsWindow?.title = "RunnerTray Settings"
-            settingsWindow?.contentView = NSHostingView(rootView: root)
+            window.title = "RunnerTray Settings"
+            window.contentView = NSHostingView(rootView: root)
+            window.delegate = self
+            window.setFrameAutosaveName("RunnerTraySettingsWindow")
+            window.minSize = NSSize(width: 620, height: 480)
+            settingsWindow = window
         }
         settingsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -50,16 +54,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func showLogsWindow() {
         if logWindow == nil {
             let root = LogViewerView(viewModel: viewModel)
-            logWindow = NSWindow(
+            let window = NSWindow(
                 contentRect: NSRect(x: 140, y: 140, width: 760, height: 500),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
                 defer: false
             )
-            logWindow?.title = "RunnerTray Logs"
-            logWindow?.contentView = NSHostingView(rootView: root)
+            window.title = "RunnerTray Logs"
+            window.contentView = NSHostingView(rootView: root)
+            window.delegate = self
+            window.setFrameAutosaveName("RunnerTrayLogWindow")
+            window.minSize = NSSize(width: 640, height: 420)
+            logWindow = window
         }
         logWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow else { return }
+        if window === settingsWindow {
+            settingsWindow = nil
+        } else if window === logWindow {
+            logWindow = nil
+        }
     }
 }

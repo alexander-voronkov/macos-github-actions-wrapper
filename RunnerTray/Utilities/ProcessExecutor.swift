@@ -8,11 +8,14 @@ struct ProcessResult {
 
 enum ProcessExecutorError: LocalizedError {
     case executableNotFound(String)
+    case timedOut(command: String, timeout: TimeInterval)
 
     var errorDescription: String? {
         switch self {
         case .executableNotFound(let binary):
             return "Executable not found: \(binary)"
+        case .timedOut(let command, let timeout):
+            return "Command timed out after \(Int(timeout))s: \(command)"
         }
     }
 }
@@ -22,7 +25,8 @@ final class ProcessExecutor {
         _ launchPath: String,
         arguments: [String],
         currentDirectory: URL? = nil,
-        environment: [String: String]? = nil
+        environment: [String: String]? = nil,
+        timeout: TimeInterval = 90
     ) throws -> ProcessResult {
         guard FileManager.default.isExecutableFile(atPath: launchPath) || launchPath.hasPrefix("/") else {
             throw ProcessExecutorError.executableNotFound(launchPath)
@@ -59,8 +63,21 @@ final class ProcessExecutor {
             }
         }
 
+        let semaphore = DispatchSemaphore(value: 0)
+        process.terminationHandler = { _ in
+            semaphore.signal()
+        }
+
         try process.run()
-        process.waitUntilExit()
+        let waitResult = semaphore.wait(timeout: .now() + timeout)
+
+        if waitResult == .timedOut {
+            process.terminate()
+            _ = semaphore.wait(timeout: .now() + 2)
+            stdoutPipe.fileHandleForReading.readabilityHandler = nil
+            stderrPipe.fileHandleForReading.readabilityHandler = nil
+            throw ProcessExecutorError.timedOut(command: "\(launchPath) \(arguments.joined(separator: " "))", timeout: timeout)
+        }
 
         stdoutPipe.fileHandleForReading.readabilityHandler = nil
         stderrPipe.fileHandleForReading.readabilityHandler = nil

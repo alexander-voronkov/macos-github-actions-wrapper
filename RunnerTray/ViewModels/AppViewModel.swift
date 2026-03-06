@@ -12,18 +12,30 @@ final class AppViewModel: ObservableObject {
     @Published var pauseRequested = false
     @Published var alertMessage: String?
 
-    private let settingsStore = SettingsStore()
-    private let configService = RunnerConfigService()
-    private let launchAgentService = LaunchAgentService()
-    private let logService = LogService()
+    private let settingsStore: SettingsStore
+    private let configService: RunnerConfigService
+    private let launchAgentService: LaunchAgentService
+    private let logService: LogService
+    private let launchAtLoginService: LaunchAtLoginService
     private lazy var statusService = RunnerStatusService(launchAgentService: launchAgentService, logService: logService)
-    private let launchAtLoginService = LaunchAtLoginService()
 
     private var timer: Timer?
     private var cancellables: Set<AnyCancellable> = []
     private var pauseDrainInFlight = false
 
-    init() {
+    init(
+        settingsStore: SettingsStore = SettingsStore(),
+        configService: RunnerConfigService = RunnerConfigService(),
+        launchAgentService: LaunchAgentService = LaunchAgentService(),
+        logService: LogService = LogService(),
+        launchAtLoginService: LaunchAtLoginService = LaunchAtLoginService()
+    ) {
+        self.settingsStore = settingsStore
+        self.configService = configService
+        self.launchAgentService = launchAgentService
+        self.logService = logService
+        self.launchAtLoginService = launchAtLoginService
+
         self.settings = settingsStore.load()
         self.settings.launchAtLogin = launchAtLoginService.isEnabled()
 
